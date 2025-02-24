@@ -38,9 +38,7 @@ dependencies {
     implementation group: 'org.ballerinalang', name: 'ballerina-lang', version: "${ballerinaLangVersion}"
     implementation group: 'org.ballerinalang', name: 'value', version: "${ballerinaLangVersion}"
     implementation group: 'io.ballerina.stdlib', name: 'time-native', version: "${stdlibTimeVersion}"
-    implementation group: 'software.amazon.awssdk', name: 'marketplacemetering', version: "${awsMpMeteringSdkVersion}"
-
-    dist group: 'software.amazon.awssdk', name: 'marketplacemetering', version: "${awsMpMeteringSdkVersion}"
+    implementation group: 'software.amazon.awssdk', name: 'marketplacemetering', version: "${awsJavaSdkVersion}"
 }
 
 tasks.withType(JavaCompile) {

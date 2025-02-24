@@ -12,8 +12,8 @@ repository = "https://github.com/ballerina-platform/module-ballerinax-aws.market
 [[platform.java17.dependency]]
 groupId = "io.ballerina.lib"
 artifactId = "aws.marketplace.mpm-native"
-version = "0.1.3-SNAPSHOT"
-path = "../native/build/libs/aws.marketplace.mpm-native-0.1.3-SNAPSHOT.jar"
+version = "0.1.3"
+path = "../native/build/libs/aws.marketplace.mpm-native-0.1.3.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.ballerina.stdlib"

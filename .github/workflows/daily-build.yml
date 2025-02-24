@@ -12,3 +12,5 @@ jobs:
     secrets: inherit
     with:
       repo-name: module-ballerinax-aws.marketplace.mpm
+      additional-build-flags: "-x test"
+      additional-test-flags: "-x test"

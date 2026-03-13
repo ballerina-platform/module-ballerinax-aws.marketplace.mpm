@@ -1,12 +1,14 @@
 ## Overview
 
-[AWS Marketplace Metering Service](https://docs.aws.amazon.com/marketplacemetering/latest/APIReference/Welcome.html) is
-a usage and billing service that allows AWS Marketplace sellers to report the usage of their products for
-billing purposes. This service supports both software-as-a-service (SaaS) products and metering products sold through
-AWS Marketplace.
+[AWS Marketplace Metering Service](https://docs.aws.amazon.com/marketplacemetering/latest/APIReference/Welcome.html) is a usage and billing service that allows AWS Marketplace sellers to report the usage of their products for billing purposes. This service supports both software-as-a-service (SaaS) products and metering products sold through AWS Marketplace.
 
-The `ballerinax/aws.marketplace.mpm` package provides APIs to interact with the AWS Marketplace Metering Service,
-enabling developers to submit usage records, batch meter usage data, and manage metering-related tasks programmatically.
+The AWS Marketplace Metering Service connector provides APIs to interact with the service, enabling developers to submit usage records, batch meter usage data, and manage metering-related tasks programmatically.
+
+### Key Features
+
+- Report usage of products for billing purposes
+- Submit usage records and batch meter usage data
+- Manage metering-related tasks programmatically
 
 ## Setup guide
 Before using this connector in your Ballerina application, complete the following:

@@ -232,8 +232,6 @@ public final class CommonUtils {
 
     public static BError createError(String message, Throwable exception) {
         BError cause = ErrorCreator.createError(exception);
-        // `mpm:Error` carries the shared `ballerinax/aws:ErrorDetails`, so the record has to be
-        // created against the `ballerinax/aws` module rather than this one.
         BMap<BString, Object> errorDetails = ErrorUtils.createErrorDetails(exception);
         return ErrorCreator.createError(
                 ModuleUtils.getModule(), Constants.MPM_ERROR, StringUtils.fromString(message), cause, errorDetails);

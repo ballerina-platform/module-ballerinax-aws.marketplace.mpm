@@ -59,11 +59,8 @@ public type BatchMeterUsageRequest record {|
 |};
 
 # Represents the details of the quantity of usage for a given product.
-#
-# The buyer must be identified by exactly one of `customerIdentifier` or `customerAWSAccountId`.
 public type UsageRecord record {|
-    # The unique identifier used to identify an individual customer, obtained via the `ResolveCustomer` operation.
-    # Not supported for new SaaS product integrations - use `customerAWSAccountId` instead
+    # The unique identifier used to identify an individual customer
     @constraint:String {
         pattern: re `[\s\S]{1,255}$`
     }

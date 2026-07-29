@@ -26,15 +26,7 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 
 /**
- * {@code ConnectionConfig} represents the connection configuration required for
- * the Ballerina AWS Marketplace Metering service client.
- *
- * <p>The {@code auth} field is a {@code ballerinax/aws.auth:AuthConfig} value;
- * credential resolution is delegated to the shared {@code aws.auth} library
- * ({@link ProviderFactory}), which supports all standardized AWS credential
- * sources (static keys, profile, STS assume-role, web identity, IAM Identity
- * Center, external process, and the default provider chain) with automatic
- * refresh of expiring credentials.
+ * {@code ConnectionConfig} contains the java representation of the Ballerina AWS MPM client configurations.
  *
  * @param region              the AWS region the client communicates with
  * @param credentialsProvider the resolved AWS credentials provider

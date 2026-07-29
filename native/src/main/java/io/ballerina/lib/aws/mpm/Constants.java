@@ -65,7 +65,6 @@ public interface Constants {
     BString MPM_USAGE_RECORD_RESULT_STATUS = StringUtils.fromString("status");
     BString MPM_USAGE_RECORD_RESULT_USAGE_RECORD = StringUtils.fromString("usageRecord");
 
-    // Constants related to MPM Error. The `ErrorDetails` record itself belongs to the shared
-    // `ballerinax/aws` module and is built by `io.ballerina.lib.aws.ErrorUtils`.
+    // Constants related to MPM Error
     String MPM_ERROR = "Error";
 }

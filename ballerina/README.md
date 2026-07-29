@@ -21,8 +21,6 @@ The AWS Marketplace Metering Service is a seller-side API: it reports the usage 
 2. A published product on a usage-based pricing model — SaaS Subscriptions, SaaS Contract with Consumption, or an AMI/container product with hourly or metered pricing.
 3. The dimensions you report usage against must match the dimensions declared on that product listing.
 
-`resolveCustomer` and `batchMeterUsage` are called from your SaaS backend using the seller account's credentials.
-
 ### Login to AWS Console
 
 Log into the [AWS Management Console](https://console.aws.amazon.com/console). If you don’t have an AWS account yet, you can create one by visiting the AWS [sign-up](https://aws.amazon.com/free/) page.
@@ -46,7 +44,23 @@ Log into the [AWS Management Console](https://console.aws.amazon.com/console). I
 
    ![specify-user-details.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/specify-user-details.png)
 
-6. Add the required permissions by adding the user to a user group, copying permissions, or attaching policies directly. And click next.
+6. Add the required permissions by attaching the following policy directly to the user, and click next.
+
+   ```json
+   {
+       "Version": "2012-10-17",
+       "Statement": [
+           {
+               "Action": [
+                   "aws-marketplace:ResolveCustomer",
+                   "aws-marketplace:BatchMeterUsage"
+               ],
+               "Effect": "Allow",
+               "Resource": "*"
+           }
+       ]
+   }
+   ```
 
    ![set-user-permissions.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/set-user-permissions.png)
 

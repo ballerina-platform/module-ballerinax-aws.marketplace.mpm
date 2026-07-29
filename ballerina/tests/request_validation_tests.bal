@@ -18,50 +18,60 @@ import ballerina/constraint;
 import ballerina/test;
 import ballerina/time;
 
-final time:Utc testTimestamp = [1753488000, 0];
+final time:Utc validationTimestamp = [1753488000, 0];
 
-@test:Config {}
+@test:Config {
+    groups: ["validation"]
+}
 isolated function testUsageRecordWithCustomerIdentifier() {
     UsageRecord usageRecord = {
         customerIdentifier: "customer-1",
         dimension: "units",
-        timestamp: testTimestamp,
+        timestamp: validationTimestamp,
         quantity: 5
     };
     UsageRecord|constraint:Error validated = constraint:validate(usageRecord);
     test:assertTrue(validated is UsageRecord, "a record identified by customerIdentifier must be accepted");
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["validation"]
+}
 isolated function testUsageRecordWithCustomerAwsAccountId() {
     UsageRecord usageRecord = {
         customerAWSAccountId: "123456789012",
         dimension: "units",
-        timestamp: testTimestamp
+        timestamp: validationTimestamp
     };
     UsageRecord|constraint:Error validated = constraint:validate(usageRecord);
     test:assertTrue(validated is UsageRecord, "a record identified by customerAWSAccountId must be accepted");
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["validation"]
+}
 isolated function testUsageRecordWithNonNumericAwsAccountId() {
     UsageRecord usageRecord = {
         customerAWSAccountId: "1234-not-an-account",
         dimension: "units",
-        timestamp: testTimestamp
+        timestamp: validationTimestamp
     };
     UsageRecord|constraint:Error validated = constraint:validate(usageRecord);
     test:assertTrue(validated is constraint:Error, "customerAWSAccountId must be all digits");
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["validation"]
+}
 isolated function testTagAcceptsServiceSupportedCharacters() {
     Tag tag = {'key: "cost centre/dept+1", value: "a.b_c:d/e@f"};
     Tag|constraint:Error validated = constraint:validate(tag);
     test:assertTrue(validated is Tag, "tags must accept the character set the service accepts");
 }
 
-@test:Config {}
+@test:Config {
+    groups: ["validation"]
+}
 isolated function testTagRejectsBackslash() {
     Tag tag = {'key: "cost\\centre", value: "value"};
     Tag|constraint:Error validated = constraint:validate(tag);

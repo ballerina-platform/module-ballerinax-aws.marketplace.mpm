@@ -96,11 +96,16 @@ function testDefaultCredentialsSigning() returns error? {
         auth: auth:DEFAULT_CREDENTIALS,
         endpoint: {customEndpoint: "http://localhost:9599"}
     });
-    MeterUsageResponse|Error response = mpm->meterUsage(
+    BatchMeterUsageResponse|Error response = mpm->batchMeterUsage(
         productCode = "test-product",
-        timestamp = <time:Utc>[1753488000, 0],
-        usageDimension = "units",
-        usageQuantity = 1
+        usageRecords = [
+            {
+                customerAWSAccountId: "123456789012",
+                dimension: "units",
+                timestamp: <time:Utc>[1753488000, 0],
+                quantity: 1
+            }
+        ]
     );
     if response !is Error {
         test:assertFail("expected a transport failure against the unused local port");

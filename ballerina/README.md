@@ -9,8 +9,6 @@ The AWS Marketplace Metering Service connector provides APIs to interact with th
 - Report usage of products for billing purposes
 - Resolve a buyer's registration token into a customer identifier (`resolveCustomer`)
 - Submit usage records for up to 25 buyers at a time from a SaaS backend (`batchMeterUsage`)
-- Emit metering records from within running AMI, Amazon ECS, or Amazon EKS software (`meterUsage`)
-- Verify the entitlement of a paid container product at startup (`registerUsage`)
 - Split reported usage into tagged buckets via usage allocations
 
 ## Setup guide
@@ -23,7 +21,7 @@ The AWS Marketplace Metering Service is a seller-side API: it reports the usage 
 2. A published product on a usage-based pricing model — SaaS Subscriptions, SaaS Contract with Consumption, or an AMI/container product with hourly or metered pricing.
 3. The dimensions you report usage against must match the dimensions declared on that product listing.
 
-Which credentials you use depends on where the connector runs. `resolveCustomer` and `batchMeterUsage` are called from your SaaS backend using the seller account's credentials. `meterUsage` and `registerUsage` are called from inside your running AMI, Amazon ECS, or Amazon EKS software, and must use the IAM role attached to the instance or task rather than static keys — configure those clients with `auth:DEFAULT_CREDENTIALS`.
+`resolveCustomer` and `batchMeterUsage` are called from your SaaS backend using the seller account's credentials.
 
 ### Login to AWS Console
 
@@ -138,8 +136,6 @@ mpm:Client mpm = check new ({
 });
 ```
 
-This is the configuration to use for `meterUsage` and `registerUsage`, which must be signed with the identity of the compute resource the software runs on.
-
 > **Note:** Ensure your AWS credentials file follows the standard format.
 >
 > ```ini
@@ -158,27 +154,6 @@ Now, utilize the available connector operations.
 
 ```ballerina
 mpm:ResolveCustomerResponse response = check mpm->resolveCustomer("<registration-token>");
-```
-
-#### Metering from inside AMI, Amazon ECS, or Amazon EKS software
-
-`meterUsage` and `registerUsage` are called by your software running in the buyer's AWS account, and AWS requires them
-to be signed with the identity of the compute resource — the Amazon EC2 instance role, the Amazon ECS task role, or EKS
-IAM roles for service accounts (IRSA). Long-term access keys are not supported for these operations, so configure the
-client with `auth:DEFAULT_CREDENTIALS` and let the provider chain pick up the role.
-
-```ballerina
-import ballerina/time;
-import ballerinax/aws.auth;
-
-mpm:Client mpm = check new ({region: aws:US_EAST_1, auth: auth:DEFAULT_CREDENTIALS});
-
-mpm:MeterUsageResponse response = check mpm->meterUsage(
-    productCode = "<aws-product-code>",
-    timestamp = time:utcNow(),
-    usageDimension = "<dimension>",
-    usageQuantity = 1
-);
 ```
 
 ### Step 4: Run the Ballerina application

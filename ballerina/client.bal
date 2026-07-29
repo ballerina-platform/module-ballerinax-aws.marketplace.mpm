@@ -73,60 +73,6 @@ public isolated client class Client {
         'class: "io.ballerina.lib.aws.mpm.NativeClientAdaptor"
     } external;
 
-    # Emits a metering record for the software running in the buyer's AWS account. Unlike `batchMeterUsage`, this
-    # operation is invoked by the running software itself (AMI, Amazon ECS, or Amazon EKS products) and is signed
-    # with the buyer's instance, task, or pod credentials, so the client must be configured with
-    # `auth:DEFAULT_CREDENTIALS`. Usage can be reported only once per hour per dimension.
-    # ```ballerina
-    # mpm:MeterUsageResponse response = check mpm->meterUsage(
-    #     productCode = "<aws-product-code>",
-    #     timestamp = time:utcNow(),
-    #     usageDimension = "<dimension>",
-    #     usageQuantity = 1
-    # );
-    # ```
-    #
-    # + request - The request parameters for the `MeterUsage` operation
-    # + return - A Ballerina `mpm:Error` if there was an error while executing the operation or else `mpm:MeterUsageResponse`
-    isolated remote function meterUsage(*MeterUsageRequest request) returns MeterUsageResponse|Error {
-        MeterUsageRequest|constraint:Error validated = constraint:validate(request);
-        if validated is constraint:Error {
-            return error Error(string `Request validation failed: ${validated.message()}`);
-        }
-        return self.externMeterUsage(validated);
-    }
-
-    isolated function externMeterUsage(MeterUsageRequest request) returns MeterUsageResponse|Error =
-    @java:Method {
-        name: "meterUsage",
-        'class: "io.ballerina.lib.aws.mpm.NativeClientAdaptor"
-    } external;
-
-    # Verifies that the buyer running a paid container product is entitled to it, and commences metering. Paid
-    # container products on Amazon ECS or Amazon EKS must call this operation at container startup.
-    # ```ballerina
-    # mpm:RegisterUsageResponse response = check mpm->registerUsage(
-    #     productCode = "<aws-product-code>",
-    #     publicKeyVersion = 1
-    # );
-    # ```
-    #
-    # + request - The request parameters for the `RegisterUsage` operation
-    # + return - A Ballerina `mpm:Error` if there was an error while executing the operation or else `mpm:RegisterUsageResponse`
-    isolated remote function registerUsage(*RegisterUsageRequest request) returns RegisterUsageResponse|Error {
-        RegisterUsageRequest|constraint:Error validated = constraint:validate(request);
-        if validated is constraint:Error {
-            return error Error(string `Request validation failed: ${validated.message()}`);
-        }
-        return self.externRegisterUsage(validated);
-    }
-
-    isolated function externRegisterUsage(RegisterUsageRequest request) returns RegisterUsageResponse|Error =
-    @java:Method {
-        name: "registerUsage",
-        'class: "io.ballerina.lib.aws.mpm.NativeClientAdaptor"
-    } external;
-
     # Closes the AWS MPM client resources.
     # ```ballerina
     # check mpm->close();

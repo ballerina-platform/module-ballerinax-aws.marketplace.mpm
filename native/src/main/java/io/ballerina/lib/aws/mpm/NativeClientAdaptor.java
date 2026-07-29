@@ -29,10 +29,6 @@ import software.amazon.awssdk.services.marketplacemetering.MarketplaceMeteringCl
 import software.amazon.awssdk.services.marketplacemetering.MarketplaceMeteringClientBuilder;
 import software.amazon.awssdk.services.marketplacemetering.model.BatchMeterUsageRequest;
 import software.amazon.awssdk.services.marketplacemetering.model.BatchMeterUsageResponse;
-import software.amazon.awssdk.services.marketplacemetering.model.MeterUsageRequest;
-import software.amazon.awssdk.services.marketplacemetering.model.MeterUsageResponse;
-import software.amazon.awssdk.services.marketplacemetering.model.RegisterUsageRequest;
-import software.amazon.awssdk.services.marketplacemetering.model.RegisterUsageResponse;
 import software.amazon.awssdk.services.marketplacemetering.model.ResolveCustomerRequest;
 import software.amazon.awssdk.services.marketplacemetering.model.ResolveCustomerResponse;
 
@@ -147,58 +143,6 @@ public final class NativeClientAdaptor {
                 return bResponse;
             } catch (Exception e) {
                 String errorMsg = String.format("Error occurred while executing batch-meter-usage operation: %s",
-                        e.getMessage());
-                BError bError = CommonUtils.createError(errorMsg, e);
-                return bError;
-            }
-        });
-    }
-
-    /**
-     * Emits a metering record for the software running in the buyer's AWS account.
-     *
-     * @param env The Ballerina runtime environment.
-     * @param bAwsMpmClient The Ballerina AWS MPM client object.
-     * @param request The Ballerina AWS MPM `MeterUsage` request.
-     * @return A Ballerina `mpm:Error` if there was an error while processing the request or else the AWS MPM
-     *         meter-usage response.
-     */
-    public static Object meterUsage(Environment env, BObject bAwsMpmClient, BMap<BString, Object> request) {
-        MarketplaceMeteringClient nativeClient = (MarketplaceMeteringClient) bAwsMpmClient.getNativeData(NATIVE_CLIENT);
-        MeterUsageRequest nativeRequest = CommonUtils.getNativeMeterUsageRequest(request);
-        return env.yieldAndRun(() -> {
-            try {
-                MeterUsageResponse nativeResponse = nativeClient.meterUsage(nativeRequest);
-                BMap<BString, Object> bResponse = CommonUtils.getBMeterUsageResponse(nativeResponse);
-                return bResponse;
-            } catch (Exception e) {
-                String errorMsg = String.format("Error occurred while executing meter-usage operation: %s",
-                        e.getMessage());
-                BError bError = CommonUtils.createError(errorMsg, e);
-                return bError;
-            }
-        });
-    }
-
-    /**
-     * Verifies the entitlement of the buyer running a paid container product and commences metering.
-     *
-     * @param env The Ballerina runtime environment.
-     * @param bAwsMpmClient The Ballerina AWS MPM client object.
-     * @param request The Ballerina AWS MPM `RegisterUsage` request.
-     * @return A Ballerina `mpm:Error` if there was an error while processing the request or else the AWS MPM
-     *         register-usage response.
-     */
-    public static Object registerUsage(Environment env, BObject bAwsMpmClient, BMap<BString, Object> request) {
-        MarketplaceMeteringClient nativeClient = (MarketplaceMeteringClient) bAwsMpmClient.getNativeData(NATIVE_CLIENT);
-        RegisterUsageRequest nativeRequest = CommonUtils.getNativeRegisterUsageRequest(request);
-        return env.yieldAndRun(() -> {
-            try {
-                RegisterUsageResponse nativeResponse = nativeClient.registerUsage(nativeRequest);
-                BMap<BString, Object> bResponse = CommonUtils.getBRegisterUsageResponse(nativeResponse);
-                return bResponse;
-            } catch (Exception e) {
-                String errorMsg = String.format("Error occurred while executing register-usage operation: %s",
                         e.getMessage());
                 BError bError = CommonUtils.createError(errorMsg, e);
                 return bError;

@@ -24,13 +24,7 @@ public type ConnectionConfig record {|
     # Authentication configuration: any standard credential source supported by
     # AWS — static credentials, an AWS profile, STS assume-role,
     # web identity (OIDC), IAM Identity Center (SSO), an external credential
-    # process, or the default credential provider chain.
-    #
-    # The `meterUsage` and `registerUsage` operations must be signed with the identity of the
-    # compute resource the software runs on — the Amazon EC2 instance role, the Amazon ECS task
-    # role, or EKS IAM roles for service accounts (IRSA). AWS does not accept long-term access
-    # keys for those operations, so use `auth:DEFAULT_CREDENTIALS` and let the provider chain
-    # pick up the role
+    # process, or the default credential provider chain
     auth:AuthConfig auth;
     # AWS region: an `aws:Region` enum member or a plain region
     # string (e.g., `"us-east-1"`) for regions not yet in the enum
@@ -146,79 +140,6 @@ public type UsageRecordResult record {|
     UsageRecordStatus status?;
     # The `UsageRecord` which was part of the `BatchMeterUsage` request
     UsageRecord usageRecord?;
-|};
-
-# Represents the parameters used for `MeterUsage` operation.
-public type MeterUsageRequest record {|
-    # The unique identifier for the Marketplace product
-    @constraint:String {
-        pattern: re `^[-a-zA-Z0-9/=:_.@]{1,255}$`
-    }
-    string productCode;
-    # The timestamp when the usage occurred (in UTC). Usage can be metered for up to six hours in the past
-    time:Utc timestamp;
-    # The dimension, defined when publishing the product, for which the usage is being reported
-    @constraint:String {
-        pattern: re `^[\s\S]{1,255}$`
-    }
-    string usageDimension;
-    # The consumption value for the hour. Defaults to `0` if not specified
-    @constraint:Int {
-        minValue: 0,
-        maxValue: 2147483647
-    }
-    int usageQuantity?;
-    # The set of usage allocations. The sum of the allocated quantities must equal `usageQuantity`,
-    # and each allocation must carry a unique set of tags
-    @constraint:Array {
-        minLength: 1,
-        maxLength: 2500
-    }
-    UsageAllocation[] usageAllocations?;
-    # A unique, case-sensitive identifier used to ensure the idempotency of the request.
-    # If not provided, AWS generates one
-    @constraint:String {
-        minLength: 1,
-        maxLength: 64
-    }
-    string clientToken?;
-    # If `true`, checks whether the required permissions are available without actually metering the usage.
-    # Defaults to `false`
-    boolean dryRun?;
-|};
-
-# Represents the result retrieved from `MeterUsage` operation.
-public type MeterUsageResponse record {|
-    # The unique identifier for this metering event
-    string meteringRecordId?;
-|};
-
-# Represents the parameters used for `RegisterUsage` operation.
-public type RegisterUsageRequest record {|
-    # The unique identifier for the Marketplace product
-    @constraint:String {
-        pattern: re `^[-a-zA-Z0-9/=:_.@]{1,255}$`
-    }
-    string productCode;
-    # The public key version provided by AWS Marketplace
-    @constraint:Int {
-        minValue: 1
-    }
-    int publicKeyVersion;
-    # An optional value which scopes the registration down to a specific running software instance,
-    # guarding against replay attacks
-    @constraint:String {
-        maxLength: 255
-    }
-    string nonce?;
-|};
-
-# Represents the result retrieved from `RegisterUsage` operation.
-public type RegisterUsageResponse record {|
-    # The JWT token which can be verified against the AWS Marketplace public key to confirm the entitlement
-    string signature?;
-    # The timestamp at which the public key version expired. Only present when the public key version has expired
-    time:Utc publicKeyRotationTimestamp?;
 |};
 
 # Represents the possible status of a `UsageRecord`

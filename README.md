@@ -24,7 +24,7 @@ The AWS Marketplace Metering Service is a seller-side API: it reports the usage 
 2. A published product on a usage-based pricing model — SaaS Subscriptions, SaaS Contract with Consumption, or an AMI/container product with hourly or metered pricing.
 3. The dimensions you report usage against must match the dimensions declared on that product listing.
 
-Which credentials you use depends on where the connector runs. `resolveCustomer` and `batchMeterUsage` are called from your SaaS backend using the seller account's credentials. `meterUsage` and `registerUsage` are called from inside your running AMI, Amazon ECS, or Amazon EKS software, and must use the IAM role attached to the instance or task rather than static keys — configure those clients with `auth:DEFAULT_CREDENTIALS`.
+`resolveCustomer` and `batchMeterUsage` are called from your SaaS backend using the seller account's credentials.
 
 ### Login to AWS Console
 
@@ -138,8 +138,6 @@ mpm:Client mpm = check new ({
    auth: auth:DEFAULT_CREDENTIALS
 });
 ```
-
-This is the configuration to use for `meterUsage` and `registerUsage`, which must be signed with the identity of the compute resource the software runs on.
 
 > **Note:** Ensure your AWS credentials file follows the standard format.
 >

@@ -33,10 +33,6 @@ import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.time.nativeimpl.Utc;
 import software.amazon.awssdk.services.marketplacemetering.model.BatchMeterUsageRequest;
 import software.amazon.awssdk.services.marketplacemetering.model.BatchMeterUsageResponse;
-import software.amazon.awssdk.services.marketplacemetering.model.MeterUsageRequest;
-import software.amazon.awssdk.services.marketplacemetering.model.MeterUsageResponse;
-import software.amazon.awssdk.services.marketplacemetering.model.RegisterUsageRequest;
-import software.amazon.awssdk.services.marketplacemetering.model.RegisterUsageResponse;
 import software.amazon.awssdk.services.marketplacemetering.model.ResolveCustomerResponse;
 import software.amazon.awssdk.services.marketplacemetering.model.Tag;
 import software.amazon.awssdk.services.marketplacemetering.model.UsageAllocation;
@@ -44,7 +40,6 @@ import software.amazon.awssdk.services.marketplacemetering.model.UsageRecord;
 import software.amazon.awssdk.services.marketplacemetering.model.UsageRecordResult;
 import software.amazon.awssdk.services.marketplacemetering.model.UsageRecordResultStatus;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -233,70 +228,6 @@ public final class CommonUtils {
             bUsageAllocation.put(Constants.MPM_USAGE_ALLOC_TAGS, tags);
         }
         return bUsageAllocation;
-    }
-
-    public static MeterUsageRequest getNativeMeterUsageRequest(BMap<BString, Object> request) {
-        String productCode = request.getStringValue(Constants.MPM_METER_USAGE_PRODUCT_CODE).getValue();
-        String usageDimension = request.getStringValue(Constants.MPM_METER_USAGE_DIMENSION).getValue();
-        Utc utcTimestamp = new Utc(request.getArrayValue(Constants.MPM_METER_USAGE_TIMESTAMP));
-        MeterUsageRequest.Builder builder = MeterUsageRequest.builder()
-                .productCode(productCode)
-                .usageDimension(usageDimension)
-                .timestamp(utcTimestamp.generateInstant());
-        if (request.containsKey(Constants.MPM_METER_USAGE_QUANTITY)) {
-            builder = builder.usageQuantity(request.getIntValue(Constants.MPM_METER_USAGE_QUANTITY).intValue());
-        }
-        if (request.containsKey(Constants.MPM_METER_USAGE_ALLOCATIONS)) {
-            builder = builder.usageAllocations(
-                    toNativeUsageAllocations(request.getArrayValue(Constants.MPM_METER_USAGE_ALLOCATIONS)));
-        }
-        if (request.containsKey(Constants.MPM_METER_USAGE_CLIENT_TOKEN)) {
-            builder = builder.clientToken(
-                    request.getStringValue(Constants.MPM_METER_USAGE_CLIENT_TOKEN).getValue());
-        }
-        if (request.containsKey(Constants.MPM_METER_USAGE_DRY_RUN)) {
-            builder = builder.dryRun(request.getBooleanValue(Constants.MPM_METER_USAGE_DRY_RUN));
-        }
-        return builder.build();
-    }
-
-    public static BMap<BString, Object> getBMeterUsageResponse(MeterUsageResponse nativeResponse) {
-        BMap<BString, Object> meterUsageResponse = ValueCreator.createRecordValue(
-                ModuleUtils.getModule(), Constants.MPM_METER_USAGE_RESPONSE);
-        String meteringRecordId = nativeResponse.meteringRecordId();
-        if (Objects.nonNull(meteringRecordId)) {
-            meterUsageResponse.put(
-                    Constants.MPM_METER_USAGE_RESPONSE_RECORD_ID, StringUtils.fromString(meteringRecordId));
-        }
-        return meterUsageResponse;
-    }
-
-    public static RegisterUsageRequest getNativeRegisterUsageRequest(BMap<BString, Object> request) {
-        String productCode = request.getStringValue(Constants.MPM_REGISTER_USAGE_PRODUCT_CODE).getValue();
-        int publicKeyVersion = request.getIntValue(Constants.MPM_REGISTER_USAGE_PUBLIC_KEY_VERSION).intValue();
-        RegisterUsageRequest.Builder builder = RegisterUsageRequest.builder()
-                .productCode(productCode)
-                .publicKeyVersion(publicKeyVersion);
-        if (request.containsKey(Constants.MPM_REGISTER_USAGE_NONCE)) {
-            builder = builder.nonce(request.getStringValue(Constants.MPM_REGISTER_USAGE_NONCE).getValue());
-        }
-        return builder.build();
-    }
-
-    public static BMap<BString, Object> getBRegisterUsageResponse(RegisterUsageResponse nativeResponse) {
-        BMap<BString, Object> registerUsageResponse = ValueCreator.createRecordValue(
-                ModuleUtils.getModule(), Constants.MPM_REGISTER_USAGE_RESPONSE);
-        String signature = nativeResponse.signature();
-        if (Objects.nonNull(signature)) {
-            registerUsageResponse.put(
-                    Constants.MPM_REGISTER_USAGE_RESPONSE_SIGNATURE, StringUtils.fromString(signature));
-        }
-        Instant publicKeyRotationTimestamp = nativeResponse.publicKeyRotationTimestamp();
-        if (Objects.nonNull(publicKeyRotationTimestamp)) {
-            registerUsageResponse.put(Constants.MPM_REGISTER_USAGE_RESPONSE_KEY_ROTATION_TS,
-                    new Utc(publicKeyRotationTimestamp).build());
-        }
-        return registerUsageResponse;
     }
 
     public static BError createError(String message, Throwable exception) {

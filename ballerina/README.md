@@ -21,70 +21,27 @@ The AWS Marketplace Metering Service is a seller-side API: it reports the usage 
 2. A published SaaS product on a consumption-based pricing model — SaaS Subscriptions or SaaS Contract with Consumption.
 3. The dimensions you report usage against must match the dimensions declared on that product listing.
 
-### Login to AWS Console
+### Obtain IAM User Credentials
 
-Log into the [AWS Management Console](https://console.aws.amazon.com/console). If you don’t have an AWS account yet, you can create one by visiting the AWS [sign-up](https://aws.amazon.com/free/) page.
+Every request is signed with AWS Signature Version 4, so the connector needs credentials for an identity that is permitted to call the metering APIs. To create an IAM user and generate an access key, follow the [Obtaining IAM user credentials](https://central.ballerina.io/ballerinax/aws/latest#obtaining-iam-user-credentials) guide.
 
-### Create a user
+When setting the permissions for that identity, grant only the metering actions this connector calls:
 
-1. In the AWS Management Console, search for IAM in the services search bar.
-2. Click on IAM
-
-   ![create-user-1.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/create-user-1.png)
-
-3. Click Users
-
-   ![create-user-2.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/create-user-2.png)
-
-4. Click Create User
-
-   ![create-user-3.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/create-user-3.png)
-
-5. Provide a suitable name for the user and continue
-
-   ![specify-user-details.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/specify-user-details.png)
-
-6. Add the required permissions by attaching the following policy directly to the user, and click next.
-
-   ```json
-   {
-       "Version": "2012-10-17",
-       "Statement": [
-           {
-               "Action": [
-                   "aws-marketplace:ResolveCustomer",
-                   "aws-marketplace:BatchMeterUsage"
-               ],
-               "Effect": "Allow",
-               "Resource": "*"
-           }
-       ]
-   }
-   ```
-
-   ![set-user-permissions.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/set-user-permissions.png)
-
-7. Review and create the user
-
-   ![review-create-user.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/review-create-user.png)
-
-### Get user access keys
-
-1. Click the user that created
-
-   ![users.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/users.png)
-
-2. Click `Create access key`
-
-   ![create-access-key-1.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/create-access-key-1.png)
-
-3. Click your use case and click next.
-
-   ![select-usecase.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/select-usecase.png)
-
-4. Record the Access Key and Secret access key. These credentials will be used to authenticate your Ballerina application with the AWS Marketplace Metering Service.
-
-   ![retrieve-access-key.png](https://raw.githubusercontent.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/refs/heads/main/docs/setup/resources/retrieve-access-key.png)
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "aws-marketplace:ResolveCustomer",
+                "aws-marketplace:BatchMeterUsage"
+            ],
+            "Effect": "Allow",
+            "Resource": "*"
+        }
+    ]
+}
+```
 
 > **Note:** Temporary, automatically refreshed credentials are recommended over long-lived IAM user access keys. If the metering backend runs with an attached IAM role, or signs in through IAM Identity Center (SSO) or a web identity token, the connector can resolve those credentials at run time with `auth:DEFAULT_CREDENTIALS`, `auth:AssumeRoleConfig`, `auth:WebIdentityConfig`, or `auth:SsoAuthConfig`, so no access key has to be stored or rotated.
 

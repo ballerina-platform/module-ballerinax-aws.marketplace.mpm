@@ -1,0 +1,10 @@
+[package]
+org = "wso2"
+name = "meter_usage"
+version = "0.1.0"
+
+[[dependency]]
+org = "ballerinax"
+name = "aws.marketplace.mpm"
+version = "1.0.0"
+repository = "local"

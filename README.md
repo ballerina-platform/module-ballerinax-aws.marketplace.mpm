@@ -185,6 +185,12 @@ Use the following command to compile and run the Ballerina program.
 bal run
 ```
 
+## Examples
+
+The `ballerinax/aws.marketplace.mpm` connector provides practical examples illustrating usage in various scenarios. Explore these [examples](https://github.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/tree/main/examples):
+
+1. [**Meter usage**](https://github.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm/tree/main/examples/meter-usage) – Resolves a buyer's registration token into a customer identifier, and reports the usage accumulated for that customer against a product dimension.
+
 ## Build from the source
 
 ### Setting up the prerequisites

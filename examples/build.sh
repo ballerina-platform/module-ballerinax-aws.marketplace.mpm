@@ -42,13 +42,12 @@ bal push --repository=local
 
 # Remove cache directories in the central repository
 echo "Cleaning cache directories in the central repository..."
-cacheDirs=$(find "$BAL_CENTRAL_DIR" -type d -name "cache-*" 2>/dev/null) || true
-for dir in $cacheDirs; do
+while IFS= read -r -d '' dir; do
   if [[ -d "$dir" ]]; then
     rm -r "$dir"
     echo "Removed cache directory: $dir"
   fi
-done
+done < <(find "$BAL_CENTRAL_DIR" -type d -name "cache-*" -print0 2>/dev/null)
 echo "Successfully cleaned the cache directories."
 
 # Create the package directory in the central repository
@@ -72,7 +71,9 @@ echo "Destination Directory: $BAL_DESTINATION_DIR"
 # Loop through examples in the examples directory and execute the command
 echo "Processing examples in the examples directory..."
 cd "$BAL_EXAMPLES_DIR"
-for dir in $(find "$BAL_EXAMPLES_DIR" -type d -maxdepth 1 -mindepth 1); do
+for dir in "$BAL_EXAMPLES_DIR"/*/; do
+  # Skip the glob itself when no example directory exists
+  [[ -d "$dir" ]] || continue
   # Skip the build directory
   if [[ "$(basename "$dir")" == "build" ]]; then
     continue

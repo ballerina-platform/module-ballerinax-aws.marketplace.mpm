@@ -70,7 +70,7 @@ function startMockService() returns error? {
 
 @test:AfterSuite
 function stopMockService() returns error? {
-    check mpmClient->close();
+    check mpmClient.close();
     if isLiveServer {
         return;
     }
@@ -82,7 +82,7 @@ function stopMockService() returns error? {
 }
 isolated function testInitWithRegionEnum() returns error? {
     Client mpm = check new (connectionConfig);
-    check mpm->close();
+    check mpm.close();
 }
 
 @test:Config {
@@ -93,7 +93,7 @@ isolated function testInitWithRegionString() returns error? {
         ? {region: "us-east-1", auth: liveAuth}
         : {region: "us-east-1", auth: mockAuth, endpoint: {customEndpoint: mockServerUrl}};
     Client mpm = check new (config);
-    check mpm->close();
+    check mpm.close();
 }
 
 @test:Config {
@@ -104,7 +104,7 @@ isolated function testInitWithDefaultCredentials() returns error? {
         ? {region: awsRegion, auth: auth:DEFAULT_CREDENTIALS}
         : {region: awsRegion, auth: auth:DEFAULT_CREDENTIALS, endpoint: {customEndpoint: mockServerUrl}};
     Client mpm = check new (config);
-    check mpm->close();
+    check mpm.close();
 }
 
 @test:Config {
@@ -120,7 +120,7 @@ isolated function testInitWithAssumeRole() returns error? {
         ? {region: awsRegion, auth: assumeRoleAuth}
         : {region: awsRegion, auth: assumeRoleAuth, endpoint: {customEndpoint: mockServerUrl}};
     Client mpm = check new (config);
-    check mpm->close();
+    check mpm.close();
 }
 
 @test:Config {
@@ -179,7 +179,7 @@ function testResolveCustomerWithUnexpectedCredentials() returns error? {
         : {region: awsRegion, auth: unexpectedAuth, endpoint: {customEndpoint: mockServerUrl}};
     Client mpm = check new (config);
     ResolveCustomerResponse|Error response = mpm->resolveCustomer(testRegistrationToken);
-    check mpm->close();
+    check mpm.close();
     if response !is Error {
         test:assertFail("expected a request signed with unexpected credentials to be rejected");
     }

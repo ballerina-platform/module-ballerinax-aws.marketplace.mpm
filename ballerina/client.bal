@@ -75,11 +75,11 @@ public isolated client class Client {
 
     # Closes the AWS MPM client resources.
     # ```ballerina
-    # check mpm->close();
+    # check mpm.close();
     # ```
-    # 
+    #
     # + return - A `mpm:Error` if there is an error while closing the client resources or else nil.
-    remote isolated function close() returns Error? =
+    public isolated function close() returns Error? =
     @java:Method {
         'class: "io.ballerina.lib.aws.mpm.NativeClientAdaptor"
     } external;

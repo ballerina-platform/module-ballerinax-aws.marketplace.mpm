@@ -63,5 +63,5 @@ public function main() returns error? {
             string `metering record: ${usageResult.meteringRecordId ?: "N/A"}`);
     }
 
-    check mpm->close();
+    check mpm.close();
 }

@@ -29,6 +29,8 @@ It contains breaking changes. See the "Migrating from 0.2.x" section below.
   the buyer through the newly added `customerAWSAccountId`. Record literals that set it continue to work
   unchanged; code that *reads* it off a `UsageRecord` returned by `batchMeterUsage` now gets `string?` rather
   than `string`.
+- **[Breaking]** `Client.close()` is no longer a remote method, since it performs no network interaction —
+  it only releases local resources. Call it as `mpm.close()` instead of `mpm->close()`.
 - The minimum supported Ballerina distribution is now `2201.12.0` (Swan Lake Update 12), up from
   `2201.11.0`.
 

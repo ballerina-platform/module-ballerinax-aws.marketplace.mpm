@@ -106,6 +106,7 @@ import ballerinax/aws.marketplace.mpm;
 Create a new `mpm:Client` by providing the region and authentication configurations.
 
 ```ballerina
+import ballerinax/aws;
 import ballerinax/aws.auth;
 
 mpm:Client mpm = check new ({

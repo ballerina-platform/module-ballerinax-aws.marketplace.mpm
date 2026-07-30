@@ -58,7 +58,8 @@ It contains breaking changes. See the "Migrating from 0.2.x" section below.
 - New `aws:Region` members not present in the former `mpm:Region` enum.
 - A new optional `UsageRecord.customerAWSAccountId` field, for reporting usage against the buyer's AWS
   account ID instead of a resolved customer identifier. The field is now sent on `batchMeterUsage` requests
-  and read back from responses; previously the service's `CustomerAWSAccountId` was not supported at all.
+  and read back from responses; previously a usage record could identify the buyer only by
+  `customerIdentifier`.
 
 ### Fixed
 - The `Tag` `key` and `value` constraint patterns accepted a backslash, which the service does not, and are

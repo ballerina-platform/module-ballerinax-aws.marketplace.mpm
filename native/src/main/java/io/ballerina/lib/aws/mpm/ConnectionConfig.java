@@ -18,52 +18,39 @@
 
 package io.ballerina.lib.aws.mpm;
 
+import io.ballerina.lib.aws.auth.ProviderFactory;
 import io.ballerina.runtime.api.utils.StringUtils;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
-
-import java.util.List;
 
 /**
  * {@code ConnectionConfig} contains the java representation of the Ballerina AWS MPM client configurations.
  *
- * @param region          The AWS region with which the connector should communicate
- * @param accessKeyId     The AWS access key, used to identify the user interacting with AWS.
- * @param secretAccessKey The AWS secret access key, used to authenticate the user interacting with AWS.
- * @param sessionToken    The AWS session token, retrieved from an AWS token service, used for authenticating that
- *                        this user has received temporary permission to access some resource.
+ * @param region              the AWS region the client communicates with
+ * @param credentialsProvider the resolved AWS credentials provider
+ * @param endpointConfig      the optional endpoint configuration ({@code null} when unset)
  */
-public record ConnectionConfig(Region region, String accessKeyId, String secretAccessKey, String sessionToken) {
-    private static final List<Region> AWS_GLOBAL_REGIONS = List.of(
-            Region.AWS_GLOBAL, Region.AWS_CN_GLOBAL, Region.AWS_US_GOV_GLOBAL, Region.AWS_ISO_GLOBAL,
-            Region.AWS_ISO_B_GLOBAL);
-    private static final BString REGION = StringUtils.fromString("region");
-    private static final BString AUTH = StringUtils.fromString("auth");
-    private static final BString AUTH_ACCESS_KEY_KEY = StringUtils.fromString("accessKeyId");
-    private static final BString AUTH_SECRET_ACCESS_KEY = StringUtils.fromString("secretAccessKey");
-    private static final BString AUTH_SESSION_TOKEN = StringUtils.fromString("sessionToken");
+public record ConnectionConfig(Region region, AwsCredentialsProvider credentialsProvider,
+        BMap<BString, Object> endpointConfig) {
+    private static final BString CONNECTION_CONFIG_REGION = StringUtils.fromString("region");
+    private static final BString CONNECTION_CONFIG_AUTH_CONFIG = StringUtils.fromString("auth");
+    private static final BString CONNECTION_CONFIG_ENDPOINT = StringUtils.fromString("endpoint");
 
-    public ConnectionConfig(BMap<BString, Object> configurations) {
-        this(
-                getRegion(configurations),
-                getAuthConfig(configurations, AUTH_ACCESS_KEY_KEY),
-                getAuthConfig(configurations, AUTH_SECRET_ACCESS_KEY),
-                getAuthConfig(configurations, AUTH_SESSION_TOKEN)
-        );
+    public ConnectionConfig(BMap<BString, Object> bConnectionConfig) {
+        this(getRegion(bConnectionConfig),
+                ProviderFactory.buildProvider(bConnectionConfig.get(CONNECTION_CONFIG_AUTH_CONFIG)),
+                getEndpointConfig(bConnectionConfig));
     }
 
-    private static Region getRegion(BMap<BString, Object> configurations) {
-        String region = configurations.getStringValue(REGION).getValue();
-        return AWS_GLOBAL_REGIONS.stream().filter(gr -> gr.id().equals(region)).findFirst().orElse(Region.of(region));
+    private static Region getRegion(BMap<BString, Object> bConnectionConfig) {
+        return Region.of(bConnectionConfig.getStringValue(CONNECTION_CONFIG_REGION).getValue());
     }
 
     @SuppressWarnings("unchecked")
-    private static String getAuthConfig(BMap<BString, Object> configurations, BString key) {
-        BMap<BString, Object> authConfig = (BMap<BString, Object>) configurations.getMapValue(AUTH);
-        if (authConfig.containsKey(key)) {
-            return authConfig.getStringValue(key).getValue();
-        }
-        return null;
+    private static BMap<BString, Object> getEndpointConfig(BMap<BString, Object> bConnectionConfig) {
+        // The `endpoint` field is optional; null when not configured.
+        return (BMap<BString, Object>) bConnectionConfig.getMapValue(CONNECTION_CONFIG_ENDPOINT);
     }
 }

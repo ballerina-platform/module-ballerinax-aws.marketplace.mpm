@@ -38,6 +38,7 @@ public interface Constants {
     // Constants related to MPM `UsageRecord`
     String MPM_USAGE_RECORD = "UsageRecord";
     BString MPM_USAGE_RECORD_CUSTOMER_IDFR = StringUtils.fromString("customerIdentifier");
+    BString MPM_USAGE_RECORD_CUSTOMER_AWS_ACNT_ID = StringUtils.fromString("customerAWSAccountId");
     BString MPM_USAGE_RECORD_DIMENSION = StringUtils.fromString("dimension");
     BString MPM_USAGE_RECORD_TIMESTAMP = StringUtils.fromString("timestamp");
     BString MPM_USAGE_RECORD_QUANTITY = StringUtils.fromString("quantity");
@@ -66,9 +67,4 @@ public interface Constants {
 
     // Constants related to MPM Error
     String MPM_ERROR = "Error";
-    String MPM_ERROR_DETAILS = "ErrorDetails";
-    BString MPM_ERROR_DETAILS_HTTP_STATUS_CODE = StringUtils.fromString("httpStatusCode");
-    BString MPM_ERROR_DETAILS_HTTP_STATUS_TXT = StringUtils.fromString("httpStatusText");
-    BString MPM_ERROR_DETAILS_ERR_CODE = StringUtils.fromString("errorCode");
-    BString MPM_ERROR_DETAILS_ERR_MSG = StringUtils.fromString("errorMessage");
 }

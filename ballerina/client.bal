@@ -22,7 +22,7 @@ public isolated client class Client {
 
     # Initialize the Ballerina AWS MPM client.
     # ```ballerina
-    # mpm:Client mpm = check new(region = mpm:US_EAST_1, auth = {
+    # mpm:Client mpm = check new(region = aws:US_EAST_1, auth = {
     #   accessKeyId: "<aws-access-key>",
     #   secretAccessKey: "<aws-secret-key>"
     # });
@@ -67,7 +67,7 @@ public isolated client class Client {
         return self.externBatchMeterUsage(validated);
     }
 
-    isolated function externBatchMeterUsage(BatchMeterUsageRequest request) returns BatchMeterUsageResponse|Error = 
+    isolated function externBatchMeterUsage(BatchMeterUsageRequest request) returns BatchMeterUsageResponse|Error =
     @java:Method {
         name: "batchMeterUsage",
         'class: "io.ballerina.lib.aws.mpm.NativeClientAdaptor"
@@ -75,11 +75,11 @@ public isolated client class Client {
 
     # Closes the AWS MPM client resources.
     # ```ballerina
-    # check mpm->close();
+    # check mpm.close();
     # ```
-    # 
+    #
     # + return - A `mpm:Error` if there is an error while closing the client resources or else nil.
-    remote function close() returns Error? =
+    public isolated function close() returns Error? =
     @java:Method {
         'class: "io.ballerina.lib.aws.mpm.NativeClientAdaptor"
     } external;

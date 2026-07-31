@@ -18,6 +18,7 @@
 
 package io.ballerina.lib.aws.mpm;
 
+import io.ballerina.lib.aws.ErrorUtils;
 import io.ballerina.runtime.api.creators.ErrorCreator;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
@@ -30,8 +31,6 @@ import io.ballerina.runtime.api.values.BError;
 import io.ballerina.runtime.api.values.BMap;
 import io.ballerina.runtime.api.values.BString;
 import io.ballerina.stdlib.time.nativeimpl.Utc;
-import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
-import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.awssdk.services.marketplacemetering.model.BatchMeterUsageRequest;
 import software.amazon.awssdk.services.marketplacemetering.model.BatchMeterUsageResponse;
 import software.amazon.awssdk.services.marketplacemetering.model.ResolveCustomerResponse;
@@ -92,30 +91,39 @@ public final class CommonUtils {
         return requestBuilder.usageRecords(nativeUsageRecords).build();
     }
 
-    @SuppressWarnings("unchecked")
     private static UsageRecord toNativeUsageRecord(BMap<BString, Object> bUsageRecord) {
-        String customerIdentifier = bUsageRecord.getStringValue(Constants.MPM_USAGE_RECORD_CUSTOMER_IDFR).getValue();
         String dimension = bUsageRecord.getStringValue(Constants.MPM_USAGE_RECORD_DIMENSION).getValue();
         BArray timestamp = bUsageRecord.getArrayValue(Constants.MPM_USAGE_RECORD_TIMESTAMP);
         Utc utcTimestamp = new Utc(timestamp);
         UsageRecord.Builder builder = UsageRecord.builder()
-                .customerIdentifier(customerIdentifier)
                 .dimension(dimension)
                 .timestamp(utcTimestamp.generateInstant());
+        if (bUsageRecord.containsKey(Constants.MPM_USAGE_RECORD_CUSTOMER_IDFR)) {
+            builder = builder.customerIdentifier(
+                    bUsageRecord.getStringValue(Constants.MPM_USAGE_RECORD_CUSTOMER_IDFR).getValue());
+        }
+        if (bUsageRecord.containsKey(Constants.MPM_USAGE_RECORD_CUSTOMER_AWS_ACNT_ID)) {
+            builder = builder.customerAWSAccountId(
+                    bUsageRecord.getStringValue(Constants.MPM_USAGE_RECORD_CUSTOMER_AWS_ACNT_ID).getValue());
+        }
         if (bUsageRecord.containsKey(Constants.MPM_USAGE_RECORD_QUANTITY)) {
             builder = builder.quantity(bUsageRecord.getIntValue(Constants.MPM_USAGE_RECORD_QUANTITY).intValue());
         }
         if (bUsageRecord.containsKey(Constants.MPM_USAGE_RECORD_USAGE_ALLOCATION)) {
-            BArray usageAllocations = bUsageRecord.getArrayValue(Constants.MPM_USAGE_RECORD_USAGE_ALLOCATION);
-            List<UsageAllocation> nativeUsageAllocations = new ArrayList<>();
-            for (int i = 0; i < usageAllocations.size(); i++) {
-                BMap<BString, Object> bUsageAllocation = (BMap) usageAllocations.get(i);
-                UsageAllocation usageAllocation = toNativeUsageAllocation(bUsageAllocation);
-                nativeUsageAllocations.add(usageAllocation);
-            }
-            builder = builder.usageAllocations(nativeUsageAllocations);
+            builder = builder.usageAllocations(toNativeUsageAllocations(
+                    bUsageRecord.getArrayValue(Constants.MPM_USAGE_RECORD_USAGE_ALLOCATION)));
         }
         return builder.build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<UsageAllocation> toNativeUsageAllocations(BArray bUsageAllocations) {
+        List<UsageAllocation> nativeUsageAllocations = new ArrayList<>();
+        for (int i = 0; i < bUsageAllocations.size(); i++) {
+            BMap<BString, Object> bUsageAllocation = (BMap) bUsageAllocations.get(i);
+            nativeUsageAllocations.add(toNativeUsageAllocation(bUsageAllocation));
+        }
+        return nativeUsageAllocations;
     }
 
     @SuppressWarnings("unchecked")
@@ -176,8 +184,16 @@ public final class CommonUtils {
 
     private static BMap<BString, Object> toBUsageRecord(UsageRecord nativeUsageRecord) {
         BMap<BString, Object> bUsageRecord = ValueCreator.createRecordValue(USAGE_RECORD_REC_TYPE);
-        bUsageRecord.put(Constants.MPM_USAGE_RECORD_CUSTOMER_IDFR,
-                StringUtils.fromString(nativeUsageRecord.customerIdentifier()));
+        String customerIdentifier = nativeUsageRecord.customerIdentifier();
+        if (Objects.nonNull(customerIdentifier)) {
+            bUsageRecord.put(
+                    Constants.MPM_USAGE_RECORD_CUSTOMER_IDFR, StringUtils.fromString(customerIdentifier));
+        }
+        String customerAWSAccountId = nativeUsageRecord.customerAWSAccountId();
+        if (Objects.nonNull(customerAWSAccountId)) {
+            bUsageRecord.put(
+                    Constants.MPM_USAGE_RECORD_CUSTOMER_AWS_ACNT_ID, StringUtils.fromString(customerAWSAccountId));
+        }
         bUsageRecord.put(Constants.MPM_USAGE_RECORD_DIMENSION, StringUtils.fromString(nativeUsageRecord.dimension()));
         bUsageRecord.put(Constants.MPM_USAGE_RECORD_TIMESTAMP, new Utc(nativeUsageRecord.timestamp()).build());
         Integer quantity = nativeUsageRecord.quantity();
@@ -216,21 +232,7 @@ public final class CommonUtils {
 
     public static BError createError(String message, Throwable exception) {
         BError cause = ErrorCreator.createError(exception);
-        BMap<BString, Object> errorDetails = ValueCreator.createRecordValue(
-                ModuleUtils.getModule(), Constants.MPM_ERROR_DETAILS);
-        if (exception instanceof AwsServiceException awsSvcExp && Objects.nonNull(awsSvcExp.awsErrorDetails())) {
-            AwsErrorDetails awsErrorDetails = awsSvcExp.awsErrorDetails();
-            if (Objects.nonNull(awsErrorDetails.sdkHttpResponse())) {
-                errorDetails.put(
-                        Constants.MPM_ERROR_DETAILS_HTTP_STATUS_CODE, awsErrorDetails.sdkHttpResponse().statusCode());
-                awsErrorDetails.sdkHttpResponse().statusText().ifPresent(httpStatusTxt -> errorDetails.put(
-                        Constants.MPM_ERROR_DETAILS_HTTP_STATUS_TXT, StringUtils.fromString(httpStatusTxt)));
-            }
-            errorDetails.put(
-                    Constants.MPM_ERROR_DETAILS_ERR_CODE, StringUtils.fromString(awsErrorDetails.errorCode()));
-            errorDetails.put(
-                    Constants.MPM_ERROR_DETAILS_ERR_MSG, StringUtils.fromString(awsErrorDetails.errorMessage()));
-        }
+        BMap<BString, Object> errorDetails = ErrorUtils.createErrorDetails(exception);
         return ErrorCreator.createError(
                 ModuleUtils.getModule(), Constants.MPM_ERROR, StringUtils.fromString(message), cause, errorDetails);
     }

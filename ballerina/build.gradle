@@ -61,6 +61,7 @@ dependencies {
     externalJars(group: 'software.amazon.awssdk', name: 'marketplacemetering', version: "${awsJavaSdkVersion}") {
         transitive = false
     }
+
     externalJars(group: 'software.amazon.awssdk', name: 'apache-client', version: "${awsJavaSdkVersion}") {
         transitive = false
     }
@@ -71,6 +72,9 @@ dependencies {
         transitive = false
     }
     externalJars(group: 'software.amazon.awssdk', name: 'aws-json-protocol', version: "${awsJavaSdkVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'software.amazon.awssdk', name: 'aws-query-protocol', version: "${awsJavaSdkVersion}") {
         transitive = false
     }
     externalJars(group: 'software.amazon.awssdk', name: 'checksums', version: "${awsJavaSdkVersion}") {
@@ -119,6 +123,9 @@ dependencies {
         transitive = false
     }
     externalJars(group: 'software.amazon.awssdk', name: 'sdk-core', version: "${awsJavaSdkVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'software.amazon.awssdk', name: 'sts', version: "${awsJavaSdkVersion}") {
         transitive = false
     }
     externalJars(group: 'software.amazon.awssdk', name: 'third-party-jackson-core', version: "${awsJavaSdkVersion}") {

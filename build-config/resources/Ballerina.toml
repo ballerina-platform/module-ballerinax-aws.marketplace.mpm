@@ -1,5 +1,5 @@
 [package]
-distribution = "2201.11.0-20241117-133400-a3054b77"
+distribution = "2201.12.0"
 org = "ballerinax"
 name = "aws.marketplace.mpm"
 version = "@toml.version@"
@@ -8,6 +8,9 @@ authors = ["Ballerina"]
 keywords = ["Cloud/Marketplace", "Cost/Paid", "Vendor/Amazon", "Area/Cloud & Infrastructure", "Type/Connector"]
 icon = "icon.png"
 repository = "https://github.com/ballerina-platform/module-ballerinax-aws.marketplace.mpm"
+
+[platform.java21]
+graalvmCompatible = true
 
 [[platform.java21.dependency]]
 groupId = "io.ballerina.lib"
@@ -50,6 +53,12 @@ groupId = "software.amazon.awssdk"
 artifactId = "aws-json-protocol"
 version = "@aws.sdk.version@"
 path = "./lib/aws-json-protocol-@aws.sdk.version@.jar"
+
+[[platform.java21.dependency]]
+groupId = "software.amazon.awssdk"
+artifactId = "aws-query-protocol"
+version = "@aws.sdk.version@"
+path = "./lib/aws-query-protocol-@aws.sdk.version@.jar"
 
 [[platform.java21.dependency]]
 groupId = "software.amazon.awssdk"
@@ -146,6 +155,12 @@ groupId = "software.amazon.awssdk"
 artifactId = "sdk-core"
 version = "@aws.sdk.version@"
 path = "./lib/sdk-core-@aws.sdk.version@.jar"
+
+[[platform.java21.dependency]]
+groupId = "software.amazon.awssdk"
+artifactId = "sts"
+version = "@aws.sdk.version@"
+path = "./lib/sts-@aws.sdk.version@.jar"
 
 [[platform.java21.dependency]]
 groupId = "software.amazon.awssdk"
